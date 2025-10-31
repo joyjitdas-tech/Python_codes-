@@ -121,5 +121,5 @@ death = pd.read_csv('tut19time_series_covid19_deaths_global.csv')
 death_melted = death.melt(id_vars=['Province/State','Country/Region','Lat','Long'],var_name='Date',value_name='num_cases')
 confirmed_melted = confirmed.melt(id_vars=['Province/State','Country/Region','Lat','Long'],var_name='Date',value_name='num_deaths')
 merged = confirmed_melted.merge(death_melted,on=['Province/State','Country/Region','Lat','Long','Date'])[['Country/Region','Date','num_cases','num_deaths']]
-
+print(death_melted)
 print(merged.head())
