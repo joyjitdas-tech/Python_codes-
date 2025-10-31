@@ -1,0 +1,25 @@
+
+
+ Python File Modes (for open())
+Mode	Meaning	   Can Read?	Can Write?	File Created if Missing?	Overwrites File?	               File Pointer
+"r"	  Read only	     ✅ Yes	     ❌ No	        ❌ No	                 ❌ No	                     Start of file
+"r+"  Read + Write	 ✅ Yes	     ✅ Yes	        ❌ No	                 ❌ No	                     Start of file
+"w"	  Write only	 ❌ No	     ✅ Yes	        ✅ Yes	                 ✅ Yes (clears old data)	 Start of file
+"w+"  Read + Write	 ✅ Yes	     ✅ Yes	        ✅ Yes	                 ✅ Yes (clears old data)	 Start of file
+"a"	  Append only	 ❌ No	     ✅ Yes	        ✅ Yes	                 ❌ No (adds at end)	         End of file
+"a+"  Append + Read	 ✅ Yes	     ✅ Yes	        ✅ Yes	                 ❌ No (adds at end)          End of file (can move with seek())
+
+
+
+
+ Binary Modes
+
+Just add "b" for binary files (images, audio, video, etc.)
+
+Mode	Meaning
+"rb"	Read binary
+"wb"	Write binary (overwrite)
+"ab"	Append binary
+"rb+"	Read + Write binary
+"wb+"	Read + Write binary (overwrite)
+"ab+"	Append + Read binary               
