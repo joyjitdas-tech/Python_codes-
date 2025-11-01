@@ -114,12 +114,27 @@ long1 = pd.DataFrame(
 ).melt(id_vars=['branch'],var_name='year',value_name='students')
 # print(long1)
 
-confirmed = pd.read_csv('tut19time_series_covid19_confirmed_global.csv')
-death = pd.read_csv('tut19time_series_covid19_deaths_global.csv')
+confirmed = pd.read_csv('tut21time_series_covid19_confirmed_global.csv')
+death = pd.read_csv('tut21time_series_covid19_deaths_global.csv')
 #print(death)
 
 death_melted = death.melt(id_vars=['Province/State','Country/Region','Lat','Long'],var_name='Date',value_name='num_cases')
 confirmed_melted = confirmed.melt(id_vars=['Province/State','Country/Region','Lat','Long'],var_name='Date',value_name='num_deaths')
 merged = confirmed_melted.merge(death_melted,on=['Province/State','Country/Region','Lat','Long','Date'])[['Country/Region','Date','num_cases','num_deaths']]
-print(death_melted)
-print(merged.head())
+# print(death_melted)
+# print(merged.head())
+
+#pivot table
+import seaborn as sns
+df = sns.load_dataset('tips')
+#print(df.head(5))
+
+#print(df.groupby(['sex','smoker'])[['total_bill']].mean().unstack())
+
+# print(df.pivot_table(index='sex',columns='smoker',values='total_bill'))
+
+#agg func->by default it is mean
+#print(df.pivot_table(index='sex',columns='smoker',values='total_bill',aggfunc=sum))
+
+#multidimentional
+print(df.pivot_table(index=['sex','smoker'],columns=['day','time'],values=['total_bill','tip']))
