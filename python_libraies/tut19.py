@@ -1,125 +1,147 @@
+#Groupby in pandas
 import numpy as np
 import pandas as pd
 
-# can we have multiple index? Let's try
-index_val = [('cse',2019),('cse',2020),('cse',2021),('cse',2022),('ece',2019),('ece',2020),('ece',2021),('ece',2022)]
-a = pd.Series([1,2,3,4,5,6,7,8],index=index_val)
-#print(a)
-#problem is cse and year is together
+movies = pd.read_csv('tut19imdb-top-1000.csv')
 
-# how to create multiindex object
-# 1. pd.MultiIndex.from_tuples()
-index_val = [('cse',2019),('cse',2020),('cse',2021),('cse',2022),('ece',2019),('ece',2020),('ece',2021),('ece',2022)]
-multiindex = pd.MultiIndex.from_tuples(index_val)
-multiindex.levels[1]
-# 2. pd.MultiIndex.from_product()
-multi = pd.MultiIndex.from_product([['cse','ece'],[2019,2020,2021,2022]])
-#print(multi)
+geners = movies.groupby('Genre')
+#print(geners.sum())
 
-#creating series
-s = pd.Series([1,2,3,4,5,6,7,8],index=multi)
-# print(s)
-# print(s['cse'])
+#find top 3 genre by total earning
+#print(geners.sum()['Gross'].sort_values(ascending=False).head(3))
 
-#to convert multiindex series in a datafrma called unstack function->vice versa use stack
-# print(s.unstack())
+#find the genre with height avg IMDB rating
+#print(geners['IMDB_Rating'].mean().sort_values(ascending=False).head(1))
 
-#multiindex datframe
-branch_df1 = pd.DataFrame(
-    [
-        [1,2],
-        [3,4],
-        [5,6],
-        [7,8],
-        [9,10],
-        [11,12],
-        [13,14],
-        [15,16],
-    ],
-    index = multiindex,
-    columns = ['avg_package','students']
-)
+#find director with most popularity
+#print(movies.groupby('Director')['No_of_Votes'].sum().sort_values(ascending=False).head(1))
 
-# print(branch_df1)
+#find the highst rating movies sin each genre
+#print(geners['IMDB_Rating'].max())
 
-# print(branch_df1['students'])
+#find top 10 animation
 
-#multiindex datframe in colums
-branch_df2 = pd.DataFrame(
-    [
-        [1,2,0,0],
-        [3,4,0,0],
-        [5,6,0,0],
-        [7,8,0,0],
-    ],
-    index = [2019,2020,2021,2022],
-    columns = pd.MultiIndex.from_product([['delhi','mumbai'],['avg_package','students']])
-)
 
-# print(branch_df2)
-# print(branch_df2['delhi'])
-# print(branch_df2.loc[2020])
+#find no movies done by each actor
+#print(movies.groupby('Star1')['Series_Title'].count().sort_values(ascending=False))
 
-# Multiindex df in terms of both cols and index
+#groupby attributes
+# print(len(geners))
+# print(geners.size())
+# print(geners.first())
+# print(geners.nth(3))
 
-branch_df3 = pd.DataFrame(
-    [
-        [1,2,0,0],
-        [3,4,0,0],
-        [5,6,0,0],
-        [7,8,0,0],
-        [9,10,0,0],
-        [11,12,0,0],
-        [13,14,0,0],
-        [15,16,0,0],
-    ],
-    index = multiindex,
-    columns = pd.MultiIndex.from_product([['delhi','mumbai'],['avg_package','students']])
-)
 
-#print(branch_df3)
+# print(geners.get_group('Fantasy'))
 
-#stacking & unstacking
-#print(branch_df3.stack().stack())
+# print(geners.groups)
 
-# print(branch_df3.shape)
-# print(branch_df3.info())
-# print(branch_df3.value_counts())
-# print(branch_df3.isnull())
+#describe->all math operation in numarical col
+# print(geners.describe())
 
-#extracting rows 
-#print(branch_df3.loc[('cse',2019):('ece',2020):2])
+# print(geners.nunique())
 
-#extrating by col
-# print(branch_df3['delhi'])
-# print(branch_df3.iloc[[0,4],[1,2]])
+# print(geners.agg({
+#     'Runtime':['mean','max'],
+#     'IMDB_Rating':'mean',
+#     'No_of_Votes':'sum',
+#     'Gross':'sum'}))
 
-#soring the index
-#print(branch_df3.sort_index(ascending=[False,True]))
+#looping on groups
+# for group,data in geners:
+#     print(data)
 
-#traspose
-#print(branch_df3.transpose())
+#find the highst rating movies sin each genre
+# df = pd.DataFrame(columns=movies.columns)
+# for group,data in geners:
+#     df = df._append(data[data['IMDB_Rating'] == data['IMDB_Rating'].max()])
+# print(df)
 
-#swaplevel
-#print(branch_df3.swaplevel())
+#split apply combine
 
-#LONG VS WIDE DATA
-long1 = pd.DataFrame(
-    {
-        'branch':['cse','ece','mech'],
-        '2020':[100,150,60],
-        '2021':[120,130,80],
-        '2022':[150,140,70]
-    }
-).melt(id_vars=['branch'],var_name='year',value_name='students')
-# print(long1)
+#find no of moives in every genre started with A
 
-confirmed = pd.read_csv('tut19time_series_covid19_confirmed_global.csv')
-death = pd.read_csv('tut19time_series_covid19_deaths_global.csv')
-#print(death)
+# def func(group):
+#     print( group['Series_Title'].str.startswith('A').sum())
 
-death_melted = death.melt(id_vars=['Province/State','Country/Region','Lat','Long'],var_name='Date',value_name='num_cases')
-confirmed_melted = confirmed.melt(id_vars=['Province/State','Country/Region','Lat','Long'],var_name='Date',value_name='num_deaths')
-merged = confirmed_melted.merge(death_melted,on=['Province/State','Country/Region','Lat','Long','Date'])[['Country/Region','Date','num_cases','num_deaths']]
-print(death_melted)
-print(merged.head())
+# geners.apply(func)
+
+#rank in every genre
+# def rank_movies(group):
+#     group['IMDB_rank'] = group['IMDB_Rating'].rank(ascending = False)
+#     return group
+
+# df1 = geners.apply(rank_movies)
+# print(df1)
+
+#normalized rating
+# def normal(group):
+#     group['Norm_rank'] = (group['IMDB_Rating'] - group['IMDB_Rating'].min())/(group['IMDB_Rating'].max() - group['IMDB_Rating'].min())
+#     return group
+
+# df2 = geners.apply(normal)
+# print(df2)
+
+#group by in multiple cols
+duo = movies.groupby(['Director','Star1'])
+# print(duo.size())
+# print(duo.get_group(('Zoya Akhtar','Hrithik Roshan')))
+
+#best director & actor duo
+# print(duo['Gross'].sum().sort_values(ascending=False).head(1))
+
+# #actor & genre combination
+# print(movies.groupby(['Star1','Genre'])['Metascore'].mean().reset_index().sort_values('Metascore',ascending=False).head())
+
+# #agg on multiple group
+# print(duo.agg(['min','max']))
+
+#ipl datas set
+ipl = pd.read_csv('tut19deliveries.csv')
+# print(ipl.shape)
+
+#find the top batsman interms of run
+batsman = ipl.groupby('batsman')
+#print(batsman['batsman_runs'].sum().sort_values(ascending=False).head(10))
+
+#find the batsman with man six
+six = ipl[ipl['batsman_runs'] == 6]
+
+# print(six.groupby('batsman')['batsman'].count().sort_values(ascending=False).head(10))
+
+#find the batsman who hit 4 & 6 in last 5 over
+over = ipl[ipl['over']>15 ]
+temp_run = over[over['batsman_runs'] ==4 | (over['batsman_runs'] == 6)]
+
+#print(temp_run.groupby('batsman')['batsman'].count().sort_values(ascending=False))
+
+#find king record against kohli
+
+temp_df = ipl[ipl['batsman'] == 'V Kohli']
+
+#print(temp_df.groupby('bowling_team')['batsman_runs'].sum())
+
+
+#highst score of any batsman
+# def highest(batsman):
+#     temp_df = ipl[ipl['batsman'] == batsman]
+#     return temp_df.groupby('match_id')['batsman_runs'].sum().sort_values(ascending = False).head(1).values[0]
+
+def highest(batsman):
+    # Filter data for that batsman
+    temp_df = ipl[ipl['batsman'] == batsman]
+
+    # Calculate total runs per match
+    runs_per_match = temp_df.groupby('match_id')['batsman_runs'].sum()
+
+    # Find match where he scored the most runs
+    top_match_id = runs_per_match.idxmax()
+    top_runs = runs_per_match.max()
+
+    # Find the bowling team in that match
+    bowling_team = temp_df[temp_df['match_id'] == top_match_id]['bowling_team'].iloc[0]
+
+    # Return both
+    return top_runs, bowling_team
+
+print(highest('V Kohli'))
